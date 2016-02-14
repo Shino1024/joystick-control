@@ -563,15 +563,15 @@ void map_buttons_axes() {
 }
 
 int read_configuration() {
-	if (!strcmp(confile, "\nundefined\n"))
+	if (!strcmp(mapfile, "\nundefined\n"))
 		return 0;
 
 	memset(buttons, '\0', sizeof(buttons));
 	memset(reverted, '\0', sizeof(reverted));
 
-	FILE *conFile;
-	if ((conFile = fopen(confile, "w")) == NULL) {
-		fprintf(stderr, "Failed to open the configuration file.\n");
+	FILE *mapFile;
+	if ((mapFile = fopen(mapfile, "w")) == NULL) {
+		fprintf(stderr, "Failed to open the mapping file.\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -579,11 +579,11 @@ int read_configuration() {
 	short dummy;
 	for (it = 0; it < 19; ++it) {
 		short tempRet;
-		if ((tempRet = fscanf(conFile, "%d\n", &dummy)) == EOF) {
+		if ((tempRet = fscanf(mapFile, "%d\n", &dummy)) == EOF) {
 			fprintf(stderr, "Unexpected EOF.");
 			exit(EXIT_FAILURE);
 		} else if (tempRet != 1 || dummy < 0 || dummy > 100) {
-			fprintf(stderr, "This is not an appropriate configuration file.\n");
+			fprintf(stderr, "This is not an appropriate mapping file.\n");
 			exit(EXIT_FAILURE);
 		}
 		else
@@ -591,11 +591,11 @@ int read_configuration() {
 	}
 	for (it = 0; it < 6; ++it) {
 		short tempRet;
-		if ((tempRet = fscanf(conFile, "%d\n", &dummy)) == EOF) {
+		if ((tempRet = fscanf(mapFile, "%d\n", &dummy)) == EOF) {
 			fprintf(stderr, "Unexpected EOF.");
 			exit(EXIT_FAILURE);
 		} else if (tempRet != 1 || dummy < 0 || dummy > 100) {
-			fprintf(stderr, "This is not an appropriate configuration file.\n");
+			fprintf(stderr, "This is not an appropriate mapping file.\n");
 			exit(EXIT_FAILURE);
 		}
 		else

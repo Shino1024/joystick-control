@@ -1,0 +1,24 @@
+## joystick-control
+
+For everyone who seems bored to control their Linux computer in casual ways: take a look at this project!
+1. Buy a simple controller and connect it to your computer.
+2. Run the program. Remember about the command line arguments!
+* If you need help, use the -h flag.
+* -j defines the joystick file that will be monitored by the program. If it remains unspecified, /dev/input/js0 will be used.
+* -c defines the path for the configuration file. It is required, because it's the main point of the program. See below how to
+* -m provides the file for reading the buttons codes. You can provide it on your own if you know the mapping scheme for your joystick. I decided to create that option in order to let the user remap the buttons in case they were messed up. For instance, I bought a Natec P44 gamepad. My computers don't read the buttons properly, but my Android phone does. So, configuring the mapping will allow the user to map proper actions to proper buttons. The scheme I have created is as follows:
+![alt tag](http://url/to/img.png)
+3. If you didn't run the program before, the wizard function will be utilized to ask the user for the input from joystick, such as pressing the buttons and moving the analogs. After the process, choose the name for the mapping file to save or don't save it at all. It can be used later with the -m option to automatically read the mapping the next time it starts.
+4. If there are any errors in the configuration file (provided with -c), the application will output the offending line to the error output stream and close.
+5. The daemon will be created. It will keep monitoring the joystick for any events and reproduce the input as it was written in the configuration file.
+6. (I am going to work on how the daemon might be stopped.)
+
+## Functionality:
+1. It takes advantage of XLib headers. That means that they will have to be installed in order to let the program control the mouse or keyboard.
+2. Printing single characters or even whole strings of text!
+3. Using the control sequences, such as Ctrl+C for copying.
+4. Controlling the cursor with buttons or analogs.
+5. Performing predefined system commands.
+
+### Disclaimer:
+Since I am rather a beginner, I will have to take great care of the readibility of the code, as well as its security and performance. This project is an attempt to work with third-party frameworks, improve my C programming knowledge and create a useful and functional application.
