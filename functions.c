@@ -17,11 +17,18 @@ void* emalloc(size_t size) {
 	return ret;
 }
 
-int ewc(int code, const char* message, ...) {
+void ewc(int code, const char* message, ...) {
 	va_list args;
 	va_start(args, message);
-	vfprintf(stderr, message, args);
-	fputc('\n', stderr);
+	if (code == EXIT_SUCCESS) {
+		vfprintf(stdout, message, args);
+		fputc('\n', stdout);
+	}
+	else {
+		vfprintf(stderr, message, args);
+		fputc('\n', stderr);
+	}
+	va_end(args);
 	exit(code);
 }
 

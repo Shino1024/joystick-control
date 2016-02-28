@@ -7,7 +7,7 @@
 #include "definitions.h"
 #include "mapping.h"
 
-void map_buttons_axes(int joyfd, struct js_event* joystick, char jsbuttons, char jsaxes, char* buttons, char* axes, char* reversed) {
+void map_buttons_axes(int joyfd, struct js_event* joystick, char jsbuttons, char jsaxes, char* jsname, char* buttons, char* axes, char* reversed) {
 	fprintf(stdout, "%s\n", "Press the button on the joystick to init the configuration wizard!");
 	int temp_stat;
 	while ((temp_stat = read(joyfd, joystick, sizeof(struct js_event))) >= 0 && (joystick->type & JS_EVENT_INIT) != 0);
@@ -87,27 +87,26 @@ void map_buttons_axes(int joyfd, struct js_event* joystick, char jsbuttons, char
 		++i;
 	}
 
-	fprintf(stdout, "Configuration is finished! Would you like to save the configuration in a file for future usage? [Yy/Nn]\n");
+	fprintf(stdout, "Configuration is finished! Would you like to save the configuration in a file for future usage? [Yy/Nn] ");
 	int yesorno = getc(stdin);
 	if (yesorno == 'Y' || yesorno == 'y') {
 		while ((yesorno = getc(stdin)) != '\n' && yesorno != EOF);
 		fprintf(stdout, "Under the name of (no more than 255 characters): ");
 		char filename[256];
-		if (fgets(filename, sizeof(filename), stdin) == NULL) {
-			fprintf(stderr, "Failed to get the filename string.\n");
-			exit(EXIT_FAILURE);
-		}
+		if (fgets(filename, sizeof(filename), stdin) == NULL)
+			ewc(EXIT_FAILURE, "Failed to get the filename string.");
 
 		filename[strlen(filename) - 1] = '\0';
 
 		FILE* temp = fopen(filename, "r");
 		if (temp != NULL) {
 			fclose(temp);
-			fprintf(stdout, "Are you sure you want to overwrite %s? [Yy/Nn]\n", filename);
+			fprintf(stdout, "Are you sure you want to overwrite %s? [Yy/Nn] ", filename);
 			yesorno = getc(stdin);
 			if (yesorno == 'Y' || yesorno == 'y') {
 				while ((yesorno = getc(stdin)) != '\n' && yesorno != EOF);
 				FILE *saveFile = fopen(filename, "w");
+				fprintf(saveFile, "%s\n", jsname);
 				for (i = 0; i < jsbuttons; ++i)
 					fprintf(saveFile, "%d\n", buttons[i]);
 				for (i = 0; i < jsaxes; ++i)
@@ -119,12 +118,13 @@ void map_buttons_axes(int joyfd, struct js_event* joystick, char jsbuttons, char
 			}
 		} else {
 			FILE *saveFile = fopen(filename, "w");
-				for (i = 0; i < jsbuttons; ++i)
-					fprintf(saveFile, "%d\n", buttons[i]);
-				for (i = 0; i < jsaxes; ++i)
-					fprintf(saveFile, "%d\n", axes[i]);
-				for (i = 0; i < jsaxes; ++i)
-					fprintf(saveFile, "%d\n", reversed[i]);
+			fprintf(saveFile, "%s\n", jsname);
+			for (i = 0; i < jsbuttons; ++i)
+				fprintf(saveFile, "%d\n", buttons[i]);
+			for (i = 0; i < jsaxes; ++i)
+				fprintf(saveFile, "%d\n", axes[i]);
+			for (i = 0; i < jsaxes; ++i)
+				fprintf(saveFile, "%d\n", reversed[i]);
 
 			fclose(saveFile);
 		}

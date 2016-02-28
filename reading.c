@@ -1,12 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <linux/joystick.h>
 
 #include "definitions.h"
 #include "reading.h"
 
-void read_configuration(int joyfd, struct js_event* joystick, int jsbuttons, int jsaxes, char* confile, char* buttons, char* axes, char* reversed) {
+void read_configuration(int joyfd, struct js_event* joystick, char jsbuttons, char jsaxes, char* jsname, char* confile, char* buttons, char* axes, char* reversed) {
 	char tempLine[4];
 
 	FILE *conFile;
@@ -23,10 +24,19 @@ void read_configuration(int joyfd, struct js_event* joystick, int jsbuttons, int
 		ewc(EXIT_FAILURE, "Error while reading from the joystick.");
 
 	fprintf(stdout, "%s\n", "Reading configuration...");
+	char file_jsname[1024];
+	if (fgets(file_jsname, 1024, conFile) == NULL)
+		ewc(EXIT_FAILURE, "Unexpected EOF. Is it an appropriate configuration file? I am expecting a joystick's name here.");
+
+	if (file_jsname[strlen(file_jsname) - 1] == '\n')
+		file_jsname[strlen(file_jsname) - 1] = '\0';
+	if (strcmp(jsname, file_jsname) != 0)
+		ewc(EXIT_FAILURE, "Error: This configuration file wasn't made for that joystick.");
+
 	short it;
 	for (it = 0; it < jsbuttons; ++it) {
 		if (fgets(tempLine, 4, conFile) == NULL)
-			ewc(EXIT_FAILURE, "Unexpected EOF. Is it an appropriate configuration file? Check the number of buttons and axes. I am expecting a button code number here.");
+			ewc(EXIT_FAILURE, "Unexpected EOF. Is it an appropriate configuration file? I am expecting a button code number here.");
 		if (atoi(tempLine) < -1 || atoi(tempLine) > 99)
 			ewc(EXIT_FAILURE, "Inappropriate configuration file!");
 		else
@@ -35,7 +45,7 @@ void read_configuration(int joyfd, struct js_event* joystick, int jsbuttons, int
 
 	for (it = 0; it < jsaxes; ++it) {
 		if (fgets(tempLine, 4, conFile) == NULL)
-			ewc(EXIT_FAILURE, "Unexpected EOF. Is it an appropriate configuration file? Check the number of buttons and axes. I am expecting an axis code number here.");
+			ewc(EXIT_FAILURE, "Unexpected EOF. Is it an appropriate configuration file? I am expecting an axis code number here.");
 		if (atoi(tempLine) < -1 || atoi(tempLine) > 99)
 			ewc(EXIT_FAILURE, "Inappropriate configuration file!");
 		else
@@ -45,7 +55,7 @@ void read_configuration(int joyfd, struct js_event* joystick, int jsbuttons, int
 
 	for (it = 0; it < jsaxes; ++it) {
 		if (fgets(tempLine, 4, conFile) == NULL)
-			ewc(EXIT_FAILURE, "Unexpected EOF. Is it an appropriate configuration file? Check the number of buttons and axes. I am expecting an axis reversal information here.");
+			ewc(EXIT_FAILURE, "Unexpected EOF. Is it an appropriate configuration file? I am expecting an axis reversal information here.");
 		if (atoi(tempLine) != -1 && atoi(tempLine) != 1)
 			ewc(EXIT_FAILURE, "Inappropriate configuration file! Expecting either -1 or 1 here.");
 		else

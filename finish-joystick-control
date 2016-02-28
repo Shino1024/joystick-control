@@ -1,0 +1,9 @@
+#!/bin/bash
+
+if [ ! -f /tmp/joystick-control-pid ]; then
+	echo joystick-control is not running.
+	exit
+fi
+kill -2 `cat /tmp/joystick-control-pid` &> /dev/null
+rm /tmp/joystick-control-pid
+echo joystick-control has stopped.

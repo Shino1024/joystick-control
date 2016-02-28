@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <sys/poll.h>
 #include <signal.h>
+#include <syslog.h>
 
 #include <linux/joystick.h>
 
@@ -33,6 +34,12 @@ int main(int argc, char* argv[]) {
 	signal(SIGINT, xdo_exit);
 	signal(SIGTERM, xdo_exit);
 
+	FILE* temp_check;
+	if ((temp_check = fopen("/tmp/joystick-control-pid", "r")) != NULL) {
+		fclose(temp_check);
+		ewc(EXIT_FAILURE, "There is another joystick-control's instance running already.");
+	}
+
 	struct js_event joystick;
 	int joyfd;
 
@@ -42,7 +49,7 @@ int main(int argc, char* argv[]) {
 
 	char* confile, * mapfile, * joyfile;
 
-	float sensitivity, frequency;
+	float sensitivity;
 
 	if (argc < 3)
 		ewc(EXIT_FAILURE, "Too few arguments. Usage: %s /path/to/the/joystick/file /path/to/the/mapping/file [/optional/path/to/the/configuration/file]", argv[0]);
@@ -57,8 +64,15 @@ int main(int argc, char* argv[]) {
 	if ((joyfd = open(joyfile, O_RDONLY)) == -1)
 		ewc(EXIT_FAILURE, "Unable to open the joystick file.");
 
-	ioctl(joyfd, JSIOCGBUTTONS, &jsbuttons);
-	ioctl(joyfd, JSIOCGAXES, &jsaxes);
+	if (ioctl(joyfd, JSIOCGBUTTONS, &jsbuttons) == -1)
+		ewc(EXIT_FAILURE, "Error returned by ioctl() while reading the number of buttons.");
+	if (ioctl(joyfd, JSIOCGAXES, &jsaxes) == -1)
+		ewc(EXIT_FAILURE, "Error returned by ioctl() while reading the number of axes.");
+	char jsname[1024];
+	if (ioctl(joyfd, JSIOCGNAME(1023), jsname) == -1)
+		ewc(EXIT_FAILURE, "Error returned by ioctl() while reading the joystick's name.");
+	fprintf(stdout, "%s %s\n", "Joystick name:", jsname);
+
 	command button_commands[jsbuttons];
 	command axis_commands[jsaxes];
 	char buttons[jsbuttons];
@@ -79,14 +93,16 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (confile)
-		read_configuration(joyfd, &joystick, jsbuttons, jsaxes, confile, buttons, axes, reversed);
+		read_configuration(joyfd, &joystick, jsbuttons, jsaxes, jsname, confile, buttons, axes, reversed);
 	else
-		map_buttons_axes(joyfd, &joystick, jsbuttons, jsaxes, buttons, axes, reversed);
+		map_buttons_axes(joyfd, &joystick, jsbuttons, jsaxes, jsname, buttons, axes, reversed);
 
 	read_mapping(mapfile, joyfd, &joystick, jsbuttons, jsaxes, buttons, axes, reversed, button_commands, axis_commands);
 
+	openlog("joystick-control", 0, LOG_USER);
+
 	xdo = xdo_new(NULL);
-//	daemon_create();
+	daemon_create();
 
 	mainloop(xdo, joyfd, &joystick, jsbuttons, jsaxes, buttons, axes, reversed, button_commands, axis_commands);
 
