@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <syslog.h>
+#include <string.h>
 
 #include <xdo.h>
 
@@ -13,27 +14,38 @@ void mainloop(xdo_t* xdo, int joyfd, struct js_event* joystick, char jsbuttons, 
 	int last_value[jsaxes];
 	char x;
 	for (x = 0; x < jsaxes; ++x)
-		last_value[x] = 99999;
+		last_value[x] = 0;
+
+	char temp_axes[jsaxes];
+	for (x = 0; x < jsaxes; ++x)
+		temp_axes[axes[x]] = x;
 
 	long delta[jsaxes];
+	int sensitivity;
 	while (1) {
 		if (read(joyfd, joystick, sizeof(joystick)) < 0)
 			syslog(LOG_ERR, "Failed to read from the joystick.");
 
 		if (joystick->type == JS_EVENT_AXIS) {
-			delta[joystick->number] = joystick->value - last_value[joystick->number];
-			if (joystick->value > 0 && delta[joystick->number] < 0 || joystick->value < 0 && delta[joystick->number] > 0)
+			delta[joystick->number] = reversed[temp_axes[joystick->number]] * joystick->value - last_value[joystick->number];
+			if (reversed[temp_axes[joystick->number]] * joystick->value > 0 && delta[joystick->number] < 0 || reversed[temp_axes[joystick->number]] * joystick->value < 0 && delta[joystick->number] > 0)
 				continue;
-
-			//DBGN(reversed[joystick->number]);
-			//DBGN(delta[joystick->number]);
-			//DBGN(reversed[axes[joystick->number]]);
+			else if (joystick->value == 0) {
+				last_value[joystick->number] = 0;
+				continue;
+			}
 
 			switch (axis_commands[axes[joystick->number]].type) {
 				case CMD_NONE:
 				break;
 
 				case CMD_MOUSEMOVE:
+				sensitivity = atoi(axis_commands[joystick->number].arguments[1]);
+				delta[joystick->number] = reversed[temp_axes[joystick->number]] * delta[joystick->number] * (delta[joystick->number] > 0 ? delta[joystick->number] : delta[joystick->number] * (-1)) * sensitivity / 1500000;
+				if (strcmp(axis_commands[joystick->number].arguments[0], "horizontal") == 0)
+					xdo_move_mouse_relative(xdo, delta[joystick->number], 0);
+				else 
+					xdo_move_mouse_relative(xdo, 0, delta[joystick->number]);
 				break;
 
 				case CMD_MOUSECLICK:
@@ -213,6 +225,6 @@ void mainloop(xdo_t* xdo, int joyfd, struct js_event* joystick, char jsbuttons, 
 			}
 		}
 
-		last_value[joystick->number] = joystick->value;
+		last_value[joystick->number] = reversed[temp_axes[joystick->number]] * joystick->value;
 	}
 }
