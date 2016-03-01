@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include <linux/joystick.h>
 
@@ -15,6 +16,9 @@ void read_mapping(char* mapfile, int joyfd, struct js_event* joystick, char jsbu
 		ewc(EXIT_FAILURE, "Couldn't open the map file.");
 
 	while (fgets(line, sizeof(line), script) != NULL) {
+		if (isspace(line[0]))
+			continue;
+
 		if (line[strlen(line) - 1] == '\n')
 			line[strlen(line) - 1] = '\0';
 		char* temp_line = strdup(line);
@@ -23,7 +27,7 @@ void read_mapping(char* mapfile, int joyfd, struct js_event* joystick, char jsbu
 		if (strcmp(token, "\n") == 0)
 			continue;
 		if (*token != 'a' && *token != 'b')
-			ewc(EXIT_FAILURE, "Syntax error: The code begins neither with 'a', nor with 'b'.");
+			ewc(EXIT_FAILURE, "Syntax error: The line begins neither with 'a', nor with 'b'.");
 		char is_button = *token - 'a';
 		token++;
 		int temp_code = atoi(token);
@@ -173,7 +177,10 @@ void read_mapping(char* mapfile, int joyfd, struct js_event* joystick, char jsbu
 				ewc(EXIT_FAILURE, "Syntax error: Found no argument after \"keypress\".");
 			char* temp_arg_0 = strdup(token);
 			if ((token = strtok(NULL, " \n")) != NULL)
-				ewc(EXIT_FAILURE, "Syntax error: \"Keypress\" can press only one sequence of keys. Do not separate the sequences with the space, use the '+' instead.");
+				ewc(EXIT_FAILURE, "Syntax error: \"keypress\" can press only one sequence of keys. Do not separate the sequences with the space, use the '+' instead.");
+
+			if (temp_arg_0[strlen(temp_arg_0) - 1] == '\n')
+				temp_arg_0[strlen(temp_arg_0) - 1] = '\0';
 
 			command temp;
 			temp.type = CMD_KEYPRESS;
@@ -192,15 +199,15 @@ void read_mapping(char* mapfile, int joyfd, struct js_event* joystick, char jsbu
 			char* line1 = strrep((char*)temp_line, "/NEWLINE", "\n");
 			line1 = strrep(line1, "/HTAB", "\t");
 
-			char* temp_token = strstr(line1, " ");
-			temp_token++;
-			temp_token = strstr(temp_token, " ");
-			temp_token++;
+			char* temp_arg_0 = strstr(line1, " ");
+			temp_arg_0++;
+			temp_arg_0 = strstr(temp_arg_0, " ");
+			temp_arg_0++;
 
 			command temp;
 			temp.type = CMD_KEYSTROKE;
 			temp.arguments = (char**)emalloc(sizeof(char*));
-			temp.arguments[0] = strdup(temp_token);
+			temp.arguments[0] = strdup(temp_arg_0);
 			if (!is_button)
 				axis_commands[temp_code] = temp;
 			else

@@ -41,7 +41,7 @@ void mainloop(xdo_t* xdo, int joyfd, struct js_event* joystick, char jsbuttons, 
 
 				case CMD_MOUSEMOVE:
 				sensitivity = atoi(axis_commands[joystick->number].arguments[1]);
-				delta[joystick->number] = reversed[temp_axes[joystick->number]] * delta[joystick->number] * (delta[joystick->number] > 0 ? delta[joystick->number] : delta[joystick->number] * (-1)) * sensitivity / 1500000;
+				delta[joystick->number] = reversed[temp_axes[joystick->number]] * delta[joystick->number] * (delta[joystick->number] > 0 ? delta[joystick->number] : delta[joystick->number] * (-1)) * sensitivity / 1800000;
 				if (strcmp(axis_commands[joystick->number].arguments[0], "horizontal") == 0)
 					xdo_move_mouse_relative(xdo, delta[joystick->number], 0);
 				else 

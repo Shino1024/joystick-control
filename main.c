@@ -92,15 +92,14 @@ int main(int argc, char* argv[]) {
 		axis_commands[temp_filler] = temp;
 	}
 
+	read_mapping(mapfile, joyfd, &joystick, jsbuttons, jsaxes, buttons, axes, reversed, button_commands, axis_commands);
+
 	if (confile)
 		read_configuration(joyfd, &joystick, jsbuttons, jsaxes, jsname, confile, buttons, axes, reversed);
 	else
 		map_buttons_axes(joyfd, &joystick, jsbuttons, jsaxes, jsname, buttons, axes, reversed);
 
-	read_mapping(mapfile, joyfd, &joystick, jsbuttons, jsaxes, buttons, axes, reversed, button_commands, axis_commands);
-
 	openlog("joystick-control", 0, LOG_USER);
-
 	xdo = xdo_new(NULL);
 	daemon_create();
 
