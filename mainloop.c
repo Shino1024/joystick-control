@@ -31,9 +31,7 @@ void mainloop(xdo_t* xdo, int joyfd, struct js_event* joystick, char jsbuttons, 
 
 			if (axis_commands[axes[joystick->number]].type == CMD_KEYPRESS) {
 				if (strcmp(axis_commands[axes[joystick->number]].arguments[0], "/HORIZONTAL") == 0) {
-					DBGN(joystick->value);
 					if (joystick->value == 0) {
-						DBGS("HORIZONTAL");
 						if (delta[joystick->number] < 0)
 							xdo_send_keysequence_window_up(xdo, CURRENTWINDOW, "Right", 0);
 						else
@@ -53,9 +51,7 @@ void mainloop(xdo_t* xdo, int joyfd, struct js_event* joystick, char jsbuttons, 
 						continue;
 					}
 				} else if (strcmp(axis_commands[axes[joystick->number]].arguments[0], "/VERTICAL") == 0) {
-					DBGN(joystick->value);
 					if (joystick->value == 0) {
-						DBGS("VERTICAL");
 						if (delta[joystick->number] < 0)
 							xdo_send_keysequence_window_up(xdo, CURRENTWINDOW, "Up", 0);
 						else
