@@ -101,7 +101,7 @@ int main(int argc, char* argv[]) {
 
 	openlog("joystick-control", 0, LOG_USER);
 	xdo = xdo_new(NULL);
-	daemon_create();
+//	daemon_create();
 
 	mainloop(xdo, joyfd, &joystick, jsbuttons, jsaxes, buttons, axes, reversed, button_commands, axis_commands);
 

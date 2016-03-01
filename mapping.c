@@ -54,7 +54,7 @@ void map_buttons_axes(int joyfd, struct js_event* joystick, char jsbuttons, char
 		++i;
 	}
 
-	fprintf(stdout, "Move all of the %d axes! Do NOT move any axis again. Try to move the analogs perfectly straight.\n", jsaxes);
+	fprintf(stdout, "Move all of the %d axes! Do NOT move any axis again. Try to move the analogs perfectly straight. Move them right and up, not left and down.\n", jsaxes);
 	i = 0;
 	while (i < jsaxes) {
 		if (read(joyfd, joystick, sizeof(struct js_event)) < 0)

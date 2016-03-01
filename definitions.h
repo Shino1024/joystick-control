@@ -16,7 +16,8 @@ typedef enum {
 
 typedef struct command {
 	cmd_type type;
-	char** arguments;	
+	char** arguments;
+	char lowhigh;
 } command;
 
 #endif

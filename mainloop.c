@@ -28,6 +28,55 @@ void mainloop(xdo_t* xdo, int joyfd, struct js_event* joystick, char jsbuttons, 
 
 		if (joystick->type == JS_EVENT_AXIS) {
 			delta[joystick->number] = reversed[temp_axes[joystick->number]] * joystick->value - last_value[joystick->number];
+
+			if (axis_commands[axes[joystick->number]].type == CMD_KEYPRESS) {
+				if (strcmp(axis_commands[axes[joystick->number]].arguments[0], "/HORIZONTAL") == 0) {
+					DBGN(joystick->value);
+					if (joystick->value == 0) {
+						DBGS("HORIZONTAL");
+						if (delta[joystick->number] < 0)
+							xdo_send_keysequence_window_up(xdo, CURRENTWINDOW, "Right", 0);
+						else
+							xdo_send_keysequence_window_up(xdo, CURRENTWINDOW, "Left", 0);
+					} else if (joystick->value * reversed[temp_axes[joystick->number]] > 0)
+						xdo_send_keysequence_window_down(xdo, CURRENTWINDOW, "Right", 0);
+					else
+						xdo_send_keysequence_window_down(xdo, CURRENTWINDOW, "Left", 0);
+
+					if (reversed[temp_axes[joystick->number]] * joystick->value > 0 && delta[joystick->number] < 0 || reversed[temp_axes[joystick->number]] * joystick->value < 0 && delta[joystick->number] > 0)
+						continue;
+					else if (joystick->value == 0) {
+						last_value[joystick->number] = 0;
+						continue;
+					} else {
+						last_value[joystick->number] = reversed[temp_axes[joystick->number]] * joystick->value;
+						continue;
+					}
+				} else if (strcmp(axis_commands[axes[joystick->number]].arguments[0], "/VERTICAL") == 0) {
+					DBGN(joystick->value);
+					if (joystick->value == 0) {
+						DBGS("VERTICAL");
+						if (delta[joystick->number] < 0)
+							xdo_send_keysequence_window_up(xdo, CURRENTWINDOW, "Up", 0);
+						else
+							xdo_send_keysequence_window_up(xdo, CURRENTWINDOW, "Down", 0);
+					} else if (joystick->value * reversed[temp_axes[joystick->number]] > 0)
+						xdo_send_keysequence_window_down(xdo, CURRENTWINDOW, "Up", 0);
+					else
+						xdo_send_keysequence_window_down(xdo, CURRENTWINDOW, "Down", 0);
+
+					if (reversed[temp_axes[joystick->number]] * joystick->value > 0 && delta[joystick->number] < 0 || reversed[temp_axes[joystick->number]] * joystick->value < 0 && delta[joystick->number] > 0)
+						continue;
+					else if (joystick->value == 0) {
+						last_value[joystick->number] = 0;
+						continue;
+					} else {
+						last_value[joystick->number] = reversed[temp_axes[joystick->number]] * joystick->value;
+						continue;
+					}
+				}
+			}
+
 			if (reversed[temp_axes[joystick->number]] * joystick->value > 0 && delta[joystick->number] < 0 || reversed[temp_axes[joystick->number]] * joystick->value < 0 && delta[joystick->number] > 0)
 				continue;
 			else if (joystick->value == 0) {
@@ -114,6 +163,7 @@ void mainloop(xdo_t* xdo, int joyfd, struct js_event* joystick, char jsbuttons, 
 				break;
 
 				case CMD_KEYPRESS:
+
 				if (delta[joystick->number] > 0)
 					xdo_send_keysequence_window_down(xdo, CURRENTWINDOW, axis_commands[axes[joystick->number]].arguments[0], 0);
 				else

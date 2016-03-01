@@ -45,7 +45,7 @@ void read_mapping(char* mapfile, int joyfd, struct js_event* joystick, char jsbu
 		}
 
 		if ((token = strtok(NULL, " ")) == NULL)
-			ewc(EXIT_FAILURE, "Syntax error: Found no command after a key/button code.");
+			ewc(EXIT_FAILURE, "Syntax error: Found no command after an axis/button code.");
 
 		if (strcmp(token, "mousemove") == 0) {
 			if (is_button)
@@ -179,6 +179,10 @@ void read_mapping(char* mapfile, int joyfd, struct js_event* joystick, char jsbu
 			if ((token = strtok(NULL, " \n")) != NULL)
 				ewc(EXIT_FAILURE, "Syntax error: \"keypress\" can press only one sequence of keys. Do not separate the sequences with the space, use the '+' instead.");
 
+			if (is_button)
+				if (strcmp(temp_arg_0, "/VERTICAL") == 0 || strcmp(temp_arg_0, "/HORIZONTAL") == 0)
+					ewc(EXIT_FAILURE, "Error: \"/VERTICAL\" and \"/HORIZONTAL\" can be used only with axes.");
+
 			if (temp_arg_0[strlen(temp_arg_0) - 1] == '\n')
 				temp_arg_0[strlen(temp_arg_0) - 1] = '\0';
 
@@ -196,10 +200,10 @@ void read_mapping(char* mapfile, int joyfd, struct js_event* joystick, char jsbu
 			if ((token = strtok(NULL, " ")) == NULL)
 				ewc(EXIT_FAILURE, "Found no text to type after \"keystroke\".");
 
-			char* line1 = strrep((char*)temp_line, "/NEWLINE", "\n");
-			line1 = strrep(line1, "/HTAB", "\t");
+			char* temp_arg_0 = strrep((char*)temp_line, "/NEWLINE", "\n");
+			temp_arg_0 = strrep(temp_arg_0, "/HTAB", "\t");
 
-			char* temp_arg_0 = strstr(line1, " ");
+			temp_arg_0 = strstr(temp_arg_0, " ");
 			temp_arg_0++;
 			temp_arg_0 = strstr(temp_arg_0, " ");
 			temp_arg_0++;
@@ -216,18 +220,18 @@ void read_mapping(char* mapfile, int joyfd, struct js_event* joystick, char jsbu
 			if ((token = strtok(NULL, " ")) == NULL)
 				ewc(EXIT_FAILURE, "Found no command to perform after \"command\".");
 
-			char* line1 = strrep((char*)temp_line, "/NEWLINE", "\n");
-			line1 = strrep(line1, "/HTAB", "\t");
+			char* temp_arg_0 = strrep((char*)temp_line, "/NEWLINE", "\n");
+			temp_arg_0 = strrep(temp_arg_0, "/HTAB", "\t");
 
-			line1 = strstr(line1, " ");
-			line1++;
-			line1 = strstr(line1, " ");
-			line1++;
+			temp_arg_0 = strstr(temp_arg_0, " ");
+			temp_arg_0++;
+			temp_arg_0 = strstr(temp_arg_0, " ");
+			temp_arg_0++;
 
 			command temp;
 			temp.type = CMD_COMMAND;
 			temp.arguments = (char**)emalloc(sizeof(char*));
-			temp.arguments[0] = strdup(line1);
+			temp.arguments[0] = strdup(temp_arg_0);
 			if (!is_button)
 				axis_commands[temp_code] = temp;
 			else

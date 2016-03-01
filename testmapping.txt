@@ -1,4 +1,4 @@
-a2 low mousemove horizontal 1
+a2 mousemove horizontal 1
 a3 mousemove vertical 1
 b10 mouseclick right
 b11 mouseclick left
@@ -10,6 +10,7 @@ b1 mouseclick left
 b3 keypress Escape
 b2 keypress Return
 b0 keypress BackSpace
-
+a4 keypress /HORIZONTAL
+a5 keypress /VERTICAL
 
 b9 keypress a
