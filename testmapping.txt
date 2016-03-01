@@ -1,0 +1,15 @@
+a2 low mousemove horizontal 1
+a3 mousemove vertical 1
+b10 mouseclick right
+b11 mouseclick left
+b4 keypress Control_L+c
+b5 keypress Control_L+v
+b6 keypress Control_L+z
+b7 keypress Control_L+Shift_L+z
+b1 mouseclick left
+b3 keypress Escape
+b2 keypress Return
+b0 keypress BackSpace
+
+
+b9 keypress a
