@@ -46,6 +46,7 @@ and use the same order in the script (more on scripting later). When it comes to
 remember that every analog and set of directional buttons consist of a pair of axes - the horizontal
 and the vertical one. You should move them PERFECTLY right and PERFECTLY up (so as to know where up
 and right are, sometimes, the axes can be reversed) in the order you wish.
+
 ---
 For instance: a standard PS3 pad has 4 action buttons, 6 L/R buttons, Start, Select and
 PlayStation home button. It also has 2 analogs and a set of directional buttons. It is
@@ -56,6 +57,8 @@ number of them, the configuration should move smoothly.
 #### WARNING: The program tends to hang up if you provide input too quickly.
 When the configuration is over, you can save it in a file to be used later as a third argument
 in the program so that you can avoid configuring it again.
+
+
 ---
 Let's move on to the possibilities of joystick-input. It supports the following commands:
 * `mousemove` - designed only for axes. It takes either "horizontal" or "vertical" input as its
@@ -87,6 +90,7 @@ it can't be prolonged to more than one line, you should use `/NEWLINE` instead o
 character or pressing Enter (trying to avoid possible conflicts). For a horizontal tab, use `/HTAB`.
 * `command` - it allows to perform a system command. It takes everything after as an argument (of
 course, everything should be in the same line) and you can use `/NEWLINE` and `/HTAB` there, too.
+
 ---
 A sample mapping file:
 ```
@@ -105,6 +109,7 @@ of the axis/button, taking into account the order you pressed/moved it in, count
 earlier. If you pressed, let's say, a circle first, it's going to be `b0`, if you want to
 click a right directional button first, the directional horizontal axis will be labeled as `a0`, it doesn't matter
 what code it is, for joystick-input will take care of it.
+
 ---
 The configuration file created with the wizard will contain the joystick's name. Thanks to that,
 it's possible to recognize whether a certain configuration file was created for some certain
