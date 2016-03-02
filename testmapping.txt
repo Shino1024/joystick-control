@@ -1,16 +1,9 @@
-a2 mousemove horizontal 1
-a3 mousemove vertical 1
-b10 mouseclick right
-b11 mouseclick left
-b4 keypress Control_L+c
-b5 keypress Control_L+v
-b6 keypress Control_L+z
-b7 keypress Control_L+Shift_L+z
-b1 mouseclick left
-b3 keypress Escape
-b2 keypress Return
-b0 keypress BackSpace
-a4 keypress /HORIZONTAL
-a5 keypress /VERTICAL
-
-b9 keypress a
+a0 mousemove horizontal 3
+a1 mousemove vertical 3
+b0 mouseclick left
+b1 keypress Return
+b2 keystroke test/NEWLINE/HTABindented test
+b3 mouseclick right 1 1
+b4 mouseteleport 10 10
+b5 mouseteleport 20 20 1
+b6 command notify-send "whoo, it works"

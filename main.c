@@ -34,6 +34,10 @@ int main(int argc, char* argv[]) {
 	signal(SIGINT, xdo_exit);
 	signal(SIGTERM, xdo_exit);
 
+	if (argc == 2)
+		if (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0)
+			ewc(EXIT_SUCCESS, "Usage: %s /path/to/the/joystick/file /path/to/the/mapping/file [/optional/path/to/the/configuration/file]", argv[0]);
+
 	FILE* temp_check;
 	if ((temp_check = fopen("/tmp/joystick-control-pid", "r")) != NULL) {
 		fclose(temp_check);
