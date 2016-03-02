@@ -8,6 +8,11 @@ from 0) and the script file. Use them as the first and the second argument to jo
 
 ## What are the dependecies of it?
 These are linux-headers and libxdo-dev. To install them:
+```bash
+apt-get install linux-headers-$(uname -r)
+apt-get install libxdo-dev
+```
+... or find the package names for the package manager you use.
 
 ## Does this program run in background?
 Yes, it does. To run it, use:
